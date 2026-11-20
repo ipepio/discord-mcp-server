@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="es">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Discord MCP Server — Entrar</title>
+		<style>
+			:root {
+				color-scheme: light;
+				--bg: #f5f7fa;
+				--surface: #ffffff;
+				--fg: #16324a;
+				--fg-2: #3d5068;
+				--muted: #5c6b80;
+				--border: #d8dee6;
+				--border-light: #e8ecf0;
+				--accent: #00adb5;
+				--action: #1e6fd9;
+				--action-hover: #185bb5;
+				--brand-a: #00d7d7;
+				--brand-b: #241dba;
+				--shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+				--radius: 14px;
+			}
+			* {
+				box-sizing: border-box;
+			}
+			html,
+			body {
+				height: 100%;
+			}
+			body {
+				margin: 0;
+				background: var(--bg);
+				color: var(--fg);
+				font:
+					16px/1.55 -apple-system,
+					BlinkMacSystemFont,
+					"Segoe UI",
+					Roboto,
+					"Helvetica Neue",
+					Arial,
+					sans-serif;
+				-webkit-font-smoothing: antialiased;
+			}
+			.shell {
+				display: grid;
+				grid-template-columns: minmax(380px, 44%) 1fr;
+				min-height: 100vh;
+			}
+
+			/* Brand panel */
+			.brand {
+				position: relative;
+				display: flex;
+				flex-direction: column;
+				justify-content: space-between;
+				padding: 48px 52px;
+				color: #ffffff;
+				background: linear-gradient(145deg, var(--brand-a) 0%, #0a8fbf 46%, var(--brand-b) 100%);
+				overflow: hidden;
+			}
+			.brand::after {
+				content: "";
+				position: absolute;
+				inset: auto -140px -180px auto;
+				width: 420px;
+				height: 420px;
+				border-radius: 50%;
+				background: rgba(255, 255, 255, 0.09);
+			}
+			.mark {
+				display: flex;
+				align-items: center;
+				gap: 14px;
+			}
+			.mark__tile {
+				width: 46px;
+				height: 46px;
+				display: grid;
+				place-items: center;
+				border-radius: 12px;
+				background: rgba(11, 18, 46, 0.34);
+				box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22);
+			}
+			.mark__mono {
+				font-size: 11.5px;
+				font-weight: 700;
+				letter-spacing: 0.06em;
+			}
+			.mark__word {
+				font-weight: 650;
+				letter-spacing: -0.01em;
+				font-size: 17px;
+			}
+			.mark__word span {
+				font-weight: 400;
+				opacity: 0.86;
+			}
+			.pitch h1 {
+				margin: 0 0 18px;
+				font-size: 40px;
+				line-height: 1.12;
+				letter-spacing: -0.025em;
+				font-weight: 680;
+			}
+			.pitch p {
+				margin: 0;
+				max-width: 40ch;
+				font-size: 17px;
+				color: rgba(255, 255, 255, 0.9);
+			}
+			.trust {
+				list-style: none;
+				margin: 34px 0 0;
+				padding: 0;
+				display: grid;
+				gap: 14px;
+			}
+			.trust li {
+				display: flex;
+				gap: 12px;
+				align-items: flex-start;
+				font-size: 14.5px;
+				color: rgba(255, 255, 255, 0.94);
+			}
+			.trust svg {
+				flex: 0 0 auto;
+				margin-top: 3px;
+			}
+			.legal {
+				font-size: 12.5px;
+				color: rgba(255, 255, 255, 0.72);
+			}
+
+			/* Login panel */
+			.login {
+				display: grid;
+				place-items: center;
+				padding: 48px;
+			}
+			.card {
+				width: 100%;
+				max-width: 430px;
+				background: var(--surface);
+				border: 1px solid var(--border-light);
+				border-radius: var(--radius);
+				box-shadow: var(--shadow-lg);
+				padding: 40px 38px;
+			}
+			.card h2 {
+				margin: 0 0 6px;
+				font-size: 22px;
+				letter-spacing: -0.015em;
+				font-weight: 650;
+			}
+			.card > p {
+				margin: 0 0 26px;
+				color: var(--muted);
+				font-size: 14.5px;
+			}
+			.guild {
+				display: flex;
+				align-items: center;
+				gap: 10px;
+				padding: 10px 12px;
+				margin: 0 0 22px;
+				border: 1px solid var(--border-light);
+				border-radius: 10px;
+				background: var(--bg);
+				font-size: 13.5px;
+				color: var(--fg-2);
+			}
+			.guild__dot {
+				width: 8px;
+				height: 8px;
+				border-radius: 50%;
+				background: #38a169;
+				flex: 0 0 auto;
+			}
+			.guild strong {
+				color: var(--fg);
+				font-weight: 620;
+			}
+			.cta {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				gap: 10px;
+				width: 100%;
+				padding: 13px 18px;
+				border: 0;
+				border-radius: 10px;
+				background: var(--action);
+				color: #fff;
+				font: inherit;
+				font-weight: 620;
+				font-size: 15.5px;
+				cursor: pointer;
+				transition:
+					background-color 140ms ease,
+					transform 140ms ease;
+			}
+			.cta:hover {
+				background: var(--action-hover);
+			}
+			.cta:active {
+				transform: translateY(1px);
+			}
+			.cta:focus-visible {
+				outline: 3px solid rgba(30, 111, 217, 0.45);
+				outline-offset: 2px;
+			}
+			.note {
+				margin: 18px 0 0;
+				font-size: 12.5px;
+				color: var(--muted);
+				line-height: 1.5;
+			}
+			.note a {
+				color: var(--action);
+				text-decoration: none;
+			}
+			.note a:hover {
+				text-decoration: underline;
+			}
+			.divider {
+				display: flex;
+				align-items: center;
+				gap: 10px;
+				margin: 26px 0 0;
+				color: var(--muted);
+				font-size: 12px;
+			}
+			.divider::before,
+			.divider::after {
+				content: "";
+				height: 1px;
+				background: var(--border-light);
+				flex: 1;
+			}
+			.mcp {
+				margin: 14px 0 0;
+				padding: 12px 13px;
+				border-radius: 10px;
+				background: var(--bg);
+				border: 1px solid var(--border-light);
+			}
+			.mcp code {
+				font:
+					12.5px/1.5 ui-monospace,
+					SFMono-Regular,
+					Menlo,
+					monospace;
+				color: var(--fg-2);
+				word-break: break-all;
+			}
+			.mcp span {
+				display: block;
+				font-size: 11.5px;
+				text-transform: uppercase;
+				letter-spacing: 0.06em;
+				color: var(--muted);
+				margin-bottom: 6px;
+			}
+			@media (max-width: 900px) {
+				.shell {
+					grid-template-columns: 1fr;
+				}
+				.brand {
+					padding: 34px 26px;
+				}
+				.pitch h1 {
+					font-size: 30px;
+				}
+				.login {
+					padding: 30px 22px 48px;
+				}
+			}
+			@media (prefers-reduced-motion: reduce) {
+				.cta {
+					transition: none;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<main class="shell">
+			<section class="brand" aria-labelledby="pitch-title">
+				<div class="mark">
+					<span class="mark__tile" aria-hidden="true">
+						<span class="mark__mono">MCP</span>
+					</span>
+					<span class="mark__word">Discord <span>MCP Server</span></span>
+				</div>
+
+				<div class="pitch">
+					<h1 id="pitch-title">Tu Discord, consultable por cualquier agente MCP.</h1>
+					<p>
+						Entras con tu cuenta de Discord y solo ves lo que tus permisos reales te permiten ver. Nada más.
+					</p>
+					<ul class="trust">
+						<li>
+							<svg
+								width="18"
+								height="18"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								aria-hidden="true"
+							>
+								<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+								<path d="m9 12 2 2 4-4" />
+							</svg>
+							<span>Permisos evaluados en cada consulta, con los roles y overrides reales.</span>
+						</li>
+						<li>
+							<svg
+								width="18"
+								height="18"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								aria-hidden="true"
+							>
+								<rect x="3" y="11" width="18" height="10" rx="2" />
+								<path d="M7 11V7a5 5 0 0 1 10 0v4" />
+							</svg>
+							<span>Tu propia instalación: los datos viven en tu infraestructura.</span>
+						</li>
+						<li>
+							<svg
+								width="18"
+								height="18"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								aria-hidden="true"
+							>
+								<circle cx="11" cy="11" r="7" />
+								<path d="m20 20-3.5-3.5" />
+							</svg>
+							<span>Búsqueda híbrida: texto completo y significado, no solo palabras exactas.</span>
+						</li>
+					</ul>
+				</div>
+
+				<p class="legal">Discord MCP Server · servidor MCP autoalojado</p>
+			</section>
+
+			<section class="login" aria-labelledby="login-title">
+				<div class="card">
+					<h2 id="login-title">Entrar al hub</h2>
+					<p>Autentícate con Discord para abrir una sesión de consulta.</p>
+
+					<div class="guild">
+						<span class="guild__dot" aria-hidden="true"></span>
+						<span>Servidor vinculado: <strong>El servidor de Nova Guild</strong></span>
+					</div>
+
+					<button class="cta" type="button">
+						<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+							<path
+								d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.4.7c1.6.4 3 1 4.3 1.8a16.7 16.7 0 0 0-14.6 0C6 4.7 7.4 4.1 9 3.7L8.6 3a19.8 19.8 0 0 0-4.9 1.4C.5 9.1-.3 13.7 0 18.2a19.9 19.9 0 0 0 6 3l.8-1.4c-1-.3-1.9-.8-2.7-1.3l.6-.5a14.2 14.2 0 0 0 10.6 0l.6.5c-.8.5-1.7 1-2.7 1.3l.8 1.4a19.9 19.9 0 0 0 6-3c.4-5.1-.6-9.6-2.7-13.8ZM8.2 15.5c-1.1 0-2-1-2-2.2s.9-2.2 2-2.2 2 1 2 2.2-.9 2.2-2 2.2Zm7.6 0c-1.1 0-2-1-2-2.2s.9-2.2 2-2.2 2 1 2 2.2-.9 2.2-2 2.2Z"
+							/>
+						</svg>
+						Entrar con Discord
+					</button>
+
+					<p class="note">
+						Autorizamos solo tu identidad (permiso <code>identify</code>). No pedimos acceso a tus mensajes
+						privados, ni a tu lista de contactos, ni permiso para escribir en tu nombre.
+					</p>
+
+					<div class="divider">o conecta tu agente</div>
+					<div class="mcp">
+						<span>Endpoint MCP</span>
+						<code>https://hub.example.com/mcp</code>
+					</div>
+					<p class="note">
+						Añade esa URL a tu cliente MCP (Claude, Inspector, Codex…). El cliente abrirá solo esta página
+						para autenticarse.
+					</p>
+				</div>
+			</section>
+		</main>
+	</body>
+</html>

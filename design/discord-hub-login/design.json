@@ -1,0 +1,27 @@
+{
+	"title": "Landing de acceso — Discord MCP Server",
+	"brief": "Página pública de login de un servidor MCP autoalojado que expone conversaciones de Discord respetando los permisos reales de cada usuario. Debe comunicar seguridad y servir de punto de entrada al flujo OAuth de Discord y al endpoint /mcp.",
+	"artboards": [
+		{
+			"file": "01-split-brand.html",
+			"title": "Split de marca",
+			"tradeoff": "Máxima confianza y contexto de producto en el primer vistazo; ocupa más superficie y empuja la tarjeta de acceso a la derecha.",
+			"width": 1440,
+			"height": 900
+		},
+		{
+			"file": "02-centered-focus.html",
+			"title": "Foco centrado",
+			"tradeoff": "Una sola decisión en pantalla, carga instantánea y muy accesible; menos narrativa y menos personalidad de marca.",
+			"width": 1440,
+			"height": 900
+		},
+		{
+			"file": "03-dark-guild.html",
+			"title": "Oscuro con identidad de servidor",
+			"tradeoff": "Muestra el servidor y cifras reales del registro, lo que vende el producto; exige mantener los datos vivos y es más costoso de implementar.",
+			"width": 1440,
+			"height": 900
+		}
+	]
+}

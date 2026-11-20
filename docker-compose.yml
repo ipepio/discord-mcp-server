@@ -1,0 +1,74 @@
+# Discord MCP Server — composition scaffold (development/self-hosted).
+#
+# Two services: the application process and its PostgreSQL 16 + pgvector
+# database. Values come from `.env`; see `.env.example`. The repository
+# never contains a credential.
+#
+# Deliberate boundaries:
+# - PostgreSQL stays internal. It is reachable from the app through this
+#   compose network and is never published to the host, so nobody can expose
+#   the guild database by accident.
+# - The application never migrates at startup
+#   (docs/architecture/persistence.md). Schema changes are an explicit
+#   operator step:
+#   `docker compose run --rm app sh -c "npm ci && npm run migrate"`
+# - The app service runs the working copy on the Node LTS image. A packaged
+#   image (Dockerfile, registry, production restart policy) is an open
+#   deployment decision recorded in docs/project-context.md and is not part
+#   of this scaffold.
+# - The database URL comes from `.env` through `env_file`, so it must use
+#   the service host name `postgres`. Host-side scripts need their own
+#   value (see `.env.example`): port 5432 is deliberately unpublished.
+
+services:
+    postgres:
+        image: pgvector/pgvector:pg16
+        environment:
+            POSTGRES_USER: ${POSTGRES_USER:-discord_mcp}
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set it in .env}
+            POSTGRES_DB: ${POSTGRES_DB:-discord_mcp_server}
+        volumes:
+            - postgres-data:/var/lib/postgresql/data
+        # Internal only: no `ports:` mapping keeps 5432 off the host.
+        expose:
+            - "5432"
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
+            interval: 5s
+            timeout: 3s
+            retries: 12
+            start_period: 30s
+        restart: unless-stopped
+        networks:
+            - hub
+
+    app:
+        image: node:22.22.0
+        working_dir: /srv/app
+        command: sh -c "npm ci && npm run build && node dist/main.js"
+        env_file:
+            - path: .env
+              required: false
+        environment:
+            APP_PORT: ${APP_PORT:-3000}
+            LOG_LEVEL: ${LOG_LEVEL:-info}
+        ports:
+            - "${APP_PORT:-3000}:${APP_PORT:-3000}"
+        volumes:
+            - .:/srv/app
+            # Dependencies are built in-container, never shared with the host.
+            - app-node-modules:/srv/app/node_modules
+        depends_on:
+            postgres:
+                condition: service_healthy
+        restart: unless-stopped
+        networks:
+            - hub
+
+networks:
+    hub:
+        driver: bridge
+
+volumes:
+    postgres-data:
+    app-node-modules:

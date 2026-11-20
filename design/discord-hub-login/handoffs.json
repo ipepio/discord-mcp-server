@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "chosen": "02-centered-focus.html",
+  "handoffs": {
+    "02-centered-focus.html": {
+      "status": "in_progress",
+      "queued": true,
+      "sentAt": "2026-11-09T09:45:31.693Z",
+      "startedAt": "2026-11-09T09:45:50.106Z",
+      "implementedAt": null
+    }
+  }
+}

@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="es">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Discord MCP Server — Acceso</title>
+		<style>
+			:root {
+				color-scheme: light;
+				--bg: #f5f7fa;
+				--surface: #ffffff;
+				--fg: #16324a;
+				--fg-2: #3d5068;
+				--muted: #5c6b80;
+				--border: #d8dee6;
+				--border-light: #e8ecf0;
+				--action: #1e6fd9;
+				--action-hover: #185bb5;
+				--accent: #00adb5;
+				--brand-a: #00d7d7;
+				--brand-b: #241dba;
+			}
+			* {
+				box-sizing: border-box;
+			}
+			body {
+				margin: 0;
+				min-height: 100vh;
+				background:
+					radial-gradient(900px 420px at 50% -160px, rgba(0, 173, 181, 0.14), transparent 70%),
+					linear-gradient(var(--border-light) 1px, transparent 1px) 0 0 / 100% 56px,
+					linear-gradient(90deg, var(--border-light) 1px, transparent 1px) 0 0 / 56px 100%,
+					var(--bg);
+				color: var(--fg);
+				font:
+					16px/1.55 -apple-system,
+					BlinkMacSystemFont,
+					"Segoe UI",
+					Roboto,
+					"Helvetica Neue",
+					Arial,
+					sans-serif;
+				display: grid;
+				place-items: center;
+				padding: 40px 22px;
+			}
+			.panel {
+				width: 100%;
+				max-width: 448px;
+				text-align: center;
+			}
+			.tile {
+				width: 84px;
+				height: 84px;
+				margin: 0 auto 14px;
+				display: grid;
+				place-items: center;
+			}
+			.tile__mono {
+				width: 100%;
+				height: 100%;
+				border-radius: 24px;
+				display: grid;
+				place-items: center;
+				background: linear-gradient(140deg, #00d7d7, #241dba);
+				color: #ffffff;
+				font-size: 21px;
+				font-weight: 700;
+				letter-spacing: 0.04em;
+			}
+			h1 {
+				margin: 0 0 8px;
+				font-size: 27px;
+				letter-spacing: -0.02em;
+				font-weight: 680;
+			}
+			.sub {
+				margin: 0 0 28px;
+				color: var(--muted);
+				font-size: 15px;
+			}
+
+			.card {
+				background: var(--surface);
+				border: 1px solid var(--border-light);
+				border-radius: 16px;
+				box-shadow:
+					0 2px 4px rgba(16, 30, 54, 0.04),
+					0 14px 40px rgba(16, 30, 54, 0.09);
+				padding: 30px 28px 26px;
+				text-align: left;
+			}
+			label.field {
+				display: block;
+				font-size: 12.5px;
+				font-weight: 600;
+				letter-spacing: 0.02em;
+				color: var(--fg-2);
+				margin-bottom: 7px;
+			}
+			.server {
+				display: flex;
+				align-items: center;
+				gap: 10px;
+				width: 100%;
+				padding: 11px 13px;
+				margin-bottom: 20px;
+				background: var(--bg);
+				border: 1px solid var(--border);
+				border-radius: 10px;
+				font-size: 14px;
+				color: var(--fg);
+			}
+			.server__avatar {
+				width: 26px;
+				height: 26px;
+				border-radius: 8px;
+				flex: 0 0 auto;
+				background: linear-gradient(140deg, #00d7d7, #241dba);
+				display: grid;
+				place-items: center;
+				color: #fff;
+				font-size: 11.5px;
+				font-weight: 700;
+			}
+			.server__meta {
+				display: grid;
+				line-height: 1.25;
+			}
+			.server__meta small {
+				color: var(--muted);
+				font-size: 11.5px;
+			}
+
+			.cta {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				gap: 10px;
+				width: 100%;
+				padding: 13px 18px;
+				border: 0;
+				border-radius: 10px;
+				background: var(--action);
+				color: #fff;
+				font: inherit;
+				font-weight: 620;
+				font-size: 15.5px;
+				cursor: pointer;
+				transition: background-color 140ms ease;
+			}
+			.cta:hover {
+				background: var(--action-hover);
+			}
+			.cta:focus-visible {
+				outline: 3px solid rgba(30, 111, 217, 0.45);
+				outline-offset: 2px;
+			}
+			.perm {
+				display: flex;
+				gap: 9px;
+				margin: 16px 0 0;
+				padding: 0;
+				list-style: none;
+			}
+			.perm li {
+				flex: 1;
+				background: var(--bg);
+				border: 1px solid var(--border-light);
+				border-radius: 9px;
+				padding: 9px 10px;
+			}
+			.perm b {
+				display: block;
+				font-size: 12px;
+				color: var(--fg);
+				font-weight: 620;
+			}
+			.perm span {
+				font-size: 11.5px;
+				color: var(--muted);
+			}
+			.fineprint {
+				margin: 18px 0 0;
+				font-size: 12px;
+				color: var(--muted);
+				line-height: 1.55;
+			}
+			.fineprint a {
+				color: var(--action);
+				text-decoration: none;
+			}
+			.fineprint a:hover {
+				text-decoration: underline;
+			}
+			.alt {
+				margin: 26px 0 0;
+				font-size: 13px;
+				color: var(--muted);
+			}
+			.alt button {
+				border: 0;
+				background: none;
+				padding: 0;
+				color: var(--action);
+				font: inherit;
+				font-weight: 600;
+				cursor: pointer;
+			}
+			.alt button:hover {
+				text-decoration: underline;
+			}
+			.alt button:focus-visible {
+				outline: 2px solid rgba(30, 111, 217, 0.45);
+				outline-offset: 3px;
+				border-radius: 4px;
+			}
+			@media (prefers-reduced-motion: reduce) {
+				.cta {
+					transition: none;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<main class="panel">
+			<div class="tile" aria-hidden="true">
+				<span class="tile__mono">MCP</span>
+			</div>
+
+			<h1>Discord MCP Server</h1>
+			<p class="sub">Consulta el conocimiento de tu servidor desde tu agente.</p>
+
+			<div class="card">
+				<label class="field" for="server">Servidor de esta instalación</label>
+				<div class="server" id="server">
+					<span class="server__avatar" aria-hidden="true">NG</span>
+					<span class="server__meta">
+						<strong>El servidor de Nova Guild</strong>
+						<small>Acceso limitado a tus permisos</small>
+					</span>
+				</div>
+
+				<button class="cta" type="button">
+					<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+						<path
+							d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.4.7c1.6.4 3 1 4.3 1.8a16.7 16.7 0 0 0-14.6 0C6 4.7 7.4 4.1 9 3.7L8.6 3a19.8 19.8 0 0 0-4.9 1.4C.5 9.1-.3 13.7 0 18.2a19.9 19.9 0 0 0 6 3l.8-1.4c-1-.3-1.9-.8-2.7-1.3l.6-.5a14.2 14.2 0 0 0 10.6 0l.6.5c-.8.5-1.7 1-2.7 1.3l.8 1.4a19.9 19.9 0 0 0 6-3c.4-5.1-.6-9.6-2.7-13.8ZM8.2 15.5c-1.1 0-2-1-2-2.2s.9-2.2 2-2.2 2 1 2 2.2-.9 2.2-2 2.2Zm7.6 0c-1.1 0-2-1-2-2.2s.9-2.2 2-2.2 2 1 2 2.2-.9 2.2-2 2.2Z"
+						/>
+					</svg>
+					Continuar con Discord
+				</button>
+
+				<ul class="perm">
+					<li><b>Solo lectura</b><span>nunca escribe en Discord</span></li>
+					<li>
+						<b>1 permiso</b><span><code>identify</code></span>
+					</li>
+					<li><b>Sesión 1 h</b><span>expiración fija</span></li>
+				</ul>
+
+				<p class="fineprint">
+					Si sales del servidor, la sesión deja de dar acceso de inmediato. Puedes revocarla cerrando sesión
+					en tu cliente MCP.
+				</p>
+			</div>
+
+			<p class="alt">¿Conectas un agente? <button type="button">Ver la URL del endpoint</button></p>
+		</main>
+	</body>
+</html>

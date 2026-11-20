@@ -1,0 +1,61 @@
+# Discord MCP Server — production composition for a single self-hosted box.
+# (Generic pattern: a published container image + compose + your own TLS proxy.)
+#
+# Deliberate boundaries:
+# - The application runs the packaged image built from ../Dockerfile
+#   (APP_IMAGE pins the image reference, e.g.
+#   ghcr.io/example-owner/discord-mcp-server:latest; a rollback changes that
+#   value only).
+# - PostgreSQL 16 + pgvector stays internal: no `ports:` mapping, reachable
+#   only through this compose network as host name `postgres`.
+# - The app port is published on all interfaces. Put a TLS-terminating reverse
+#   proxy or CDN in front of it and make that proxy the single trusted hop: it
+#   must set or overwrite X-Forwarded-For, which is what the rate limiter keys
+#   on (docs/installation.md §6). Reaching the host port directly bypasses TLS,
+#   so restrict it with the host firewall.
+# - The app never migrates at startup. Schema changes are an explicit
+#   operator step:
+#   docker compose -f docker-compose.prod.yml run --rm app npm run migrate
+# - Values come from `.env` next to this file; see env.production.example.
+#   The repository never contains a credential.
+
+services:
+    postgres:
+        image: pgvector/pgvector:pg16
+        environment:
+            POSTGRES_USER: ${POSTGRES_USER:?set it in .env}
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set it in .env}
+            POSTGRES_DB: ${POSTGRES_DB:?set it in .env}
+        volumes:
+            - postgres-data:/var/lib/postgresql/data
+        expose:
+            - "5432"
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
+            interval: 5s
+            timeout: 3s
+            retries: 12
+            start_period: 30s
+        restart: unless-stopped
+        networks:
+            - hub
+
+    app:
+        image: ${APP_IMAGE:?set APP_IMAGE in .env}
+        env_file:
+            - .env
+        ports:
+            - "${APP_PORT:-3000}:${APP_PORT:-3000}"
+        depends_on:
+            postgres:
+                condition: service_healthy
+        restart: unless-stopped
+        networks:
+            - hub
+
+networks:
+    hub:
+        driver: bridge
+
+volumes:
+    postgres-data:

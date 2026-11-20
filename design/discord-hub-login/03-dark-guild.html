@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="es">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Discord MCP Server — Acceso al servidor</title>
+		<style>
+			:root {
+				color-scheme: dark;
+				--bg: #0b1020;
+				--bg-2: #111a30;
+				--surface: rgba(255, 255, 255, 0.045);
+				--surface-strong: #16203a;
+				--fg: #e8eef7;
+				--fg-2: #b7c5d8;
+				--muted: #8fa2bb;
+				--border: rgba(255, 255, 255, 0.12);
+				--action: #2c7be5;
+				--action-hover: #4a92f0;
+				--accent: #00d7d7;
+				--brand-a: #00d7d7;
+				--brand-b: #241dba;
+			}
+			* {
+				box-sizing: border-box;
+			}
+			body {
+				margin: 0;
+				min-height: 100vh;
+				color: var(--fg);
+				font:
+					16px/1.55 -apple-system,
+					BlinkMacSystemFont,
+					"Segoe UI",
+					Roboto,
+					"Helvetica Neue",
+					Arial,
+					sans-serif;
+				background:
+					radial-gradient(1100px 520px at 18% -10%, rgba(0, 215, 215, 0.18), transparent 62%),
+					radial-gradient(900px 460px at 88% 8%, rgba(36, 29, 186, 0.42), transparent 60%),
+					linear-gradient(180deg, var(--bg-2), var(--bg) 62%);
+				-webkit-font-smoothing: antialiased;
+			}
+			.top {
+				max-width: 1120px;
+				margin: 0 auto;
+				padding: 26px 30px;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+			}
+			.mark {
+				display: flex;
+				align-items: center;
+				gap: 12px;
+			}
+			.mark__tile {
+				width: 40px;
+				height: 40px;
+				display: grid;
+				place-items: center;
+				border-radius: 11px;
+				background: linear-gradient(150deg, rgba(0, 215, 215, 0.28), rgba(36, 29, 186, 0.55));
+				box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16);
+			}
+			.mark__mono {
+				font-size: 10.5px;
+				font-weight: 700;
+				letter-spacing: 0.06em;
+				color: #ffffff;
+			}
+			.mark__word {
+				font-weight: 640;
+				letter-spacing: -0.01em;
+				font-size: 15.5px;
+			}
+			.mark__word span {
+				color: var(--muted);
+				font-weight: 400;
+			}
+			.status {
+				display: flex;
+				align-items: center;
+				gap: 8px;
+				font-size: 12.5px;
+				color: var(--fg-2);
+				background: var(--surface);
+				border: 1px solid var(--border);
+				padding: 6px 12px;
+				border-radius: 999px;
+			}
+			.status__dot {
+				width: 7px;
+				height: 7px;
+				border-radius: 50%;
+				background: #3ddc97;
+				box-shadow: 0 0 0 3px rgba(61, 220, 151, 0.18);
+			}
+
+			.hero {
+				max-width: 1120px;
+				margin: 0 auto;
+				padding: 34px 30px 70px;
+				display: grid;
+				grid-template-columns: 1.05fr 0.95fr;
+				gap: 54px;
+				align-items: center;
+			}
+			.eyebrow {
+				display: inline-flex;
+				align-items: center;
+				gap: 8px;
+				font-size: 12px;
+				letter-spacing: 0.1em;
+				text-transform: uppercase;
+				color: var(--accent);
+				margin-bottom: 16px;
+			}
+			.eyebrow::before {
+				content: "";
+				width: 22px;
+				height: 1px;
+				background: currentColor;
+			}
+			h1 {
+				margin: 0 0 18px;
+				font-size: 44px;
+				line-height: 1.08;
+				letter-spacing: -0.03em;
+				font-weight: 680;
+			}
+			h1 em {
+				font-style: normal;
+				background: linear-gradient(100deg, var(--brand-a), #7aa7ff);
+				-webkit-background-clip: text;
+				background-clip: text;
+				color: transparent;
+			}
+			.lead {
+				margin: 0 0 26px;
+				font-size: 16.5px;
+				color: var(--fg-2);
+				max-width: 46ch;
+			}
+			.chips {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 9px;
+				margin: 0;
+				padding: 0;
+				list-style: none;
+			}
+			.chips li {
+				font-size: 12.5px;
+				color: var(--fg-2);
+				border: 1px solid var(--border);
+				background: var(--surface);
+				padding: 6px 11px;
+				border-radius: 8px;
+			}
+			.chips code {
+				color: var(--accent);
+				font-size: 12px;
+			}
+
+			.panel {
+				background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.03));
+				border: 1px solid var(--border);
+				border-radius: 18px;
+				padding: 26px;
+				box-shadow: 0 28px 70px rgba(3, 8, 20, 0.55);
+				backdrop-filter: blur(6px);
+			}
+			.guild {
+				display: flex;
+				align-items: center;
+				gap: 13px;
+				padding-bottom: 20px;
+				border-bottom: 1px solid var(--border);
+			}
+			.guild__badge {
+				width: 46px;
+				height: 46px;
+				border-radius: 13px;
+				flex: 0 0 auto;
+				background: linear-gradient(140deg, var(--brand-a), var(--brand-b));
+				display: grid;
+				place-items: center;
+				font-weight: 700;
+				font-size: 16px;
+				color: #fff;
+			}
+			.guild__text {
+				display: grid;
+				line-height: 1.3;
+			}
+			.guild__text strong {
+				font-size: 15.5px;
+				font-weight: 630;
+			}
+			.guild__text small {
+				font-size: 12px;
+				color: var(--muted);
+			}
+			.rows {
+				list-style: none;
+				margin: 18px 0 22px;
+				padding: 0;
+				display: grid;
+				gap: 11px;
+			}
+			.rows li {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				font-size: 13.5px;
+				color: var(--fg-2);
+			}
+			.rows b {
+				color: var(--fg);
+				font-weight: 600;
+			}
+			.cta {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				gap: 10px;
+				width: 100%;
+				padding: 13px 18px;
+				border: 0;
+				border-radius: 11px;
+				background: linear-gradient(180deg, #3d8bf0, var(--action));
+				color: #fff;
+				font: inherit;
+				font-weight: 630;
+				font-size: 15.5px;
+				cursor: pointer;
+				transition:
+					filter 140ms ease,
+					transform 140ms ease;
+			}
+			.cta:hover {
+				filter: brightness(1.07);
+			}
+			.cta:active {
+				transform: translateY(1px);
+			}
+			.cta:focus-visible {
+				outline: 3px solid rgba(122, 167, 255, 0.55);
+				outline-offset: 3px;
+			}
+			.hint {
+				margin: 15px 0 0;
+				font-size: 12px;
+				color: var(--muted);
+				line-height: 1.55;
+			}
+			.hint code {
+				color: var(--fg-2);
+			}
+			.foot {
+				max-width: 1120px;
+				margin: 0 auto;
+				padding: 0 30px 40px;
+				font-size: 12px;
+				color: var(--muted);
+			}
+			@media (max-width: 940px) {
+				.hero {
+					grid-template-columns: 1fr;
+					gap: 34px;
+					padding-top: 10px;
+				}
+				h1 {
+					font-size: 32px;
+				}
+			}
+			@media (prefers-reduced-motion: reduce) {
+				.cta {
+					transition: none;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<header class="top">
+			<div class="mark">
+				<span class="mark__tile" aria-hidden="true">
+					<span class="mark__mono">MCP</span>
+				</span>
+				<span class="mark__word">Discord <span>MCP Server</span></span>
+			</div>
+			<div class="status"><span class="status__dot" aria-hidden="true"></span> Servidor sincronizado</div>
+		</header>
+
+		<main class="hero">
+			<section>
+				<p class="eyebrow">Acceso al conocimiento del servidor</p>
+				<h1>Todo lo que se habló, <em>encontrable</em> por tu agente.</h1>
+				<p class="lead">
+					Este hub espeja el servidor y expone sus conversaciones por MCP. Cada persona consulta con sus
+					propios permisos de Discord: los roles, los canales privados y los threads se respetan uno a uno.
+				</p>
+				<ul class="chips">
+					<li>Búsqueda híbrida</li>
+					<li>Tiempo real por Gateway</li>
+					<li>Borrados respetados</li>
+					<li>Permiso único: <code>identify</code></li>
+				</ul>
+			</section>
+
+			<section class="panel" aria-labelledby="panel-title">
+				<div class="guild">
+					<span class="guild__badge" aria-hidden="true">NG</span>
+					<span class="guild__text">
+						<strong id="panel-title">El servidor de Nova Guild</strong>
+						<small>Instalación autoalojada · guild 1111111111111111111</small>
+					</span>
+				</div>
+				<ul class="rows">
+					<li><span>Canales que puedes leer</span><b>7</b></li>
+					<li><span>Mensajes indexados</span><b>2.539</b></li>
+					<li><span>Estado del registro</span><b>Actual</b></li>
+				</ul>
+				<button class="cta" type="button">
+					<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+						<path
+							d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.4.7c1.6.4 3 1 4.3 1.8a16.7 16.7 0 0 0-14.6 0C6 4.7 7.4 4.1 9 3.7L8.6 3a19.8 19.8 0 0 0-4.9 1.4C.5 9.1-.3 13.7 0 18.2a19.9 19.9 0 0 0 6 3l.8-1.4c-1-.3-1.9-.8-2.7-1.3l.6-.5a14.2 14.2 0 0 0 10.6 0l.6.5c-.8.5-1.7 1-2.7 1.3l.8 1.4a19.9 19.9 0 0 0 6-3c.4-5.1-.6-9.6-2.7-13.8ZM8.2 15.5c-1.1 0-2-1-2-2.2s.9-2.2 2-2.2 2 1 2 2.2-.9 2.2-2 2.2Zm7.6 0c-1.1 0-2-1-2-2.2s.9-2.2 2-2.2 2 1 2 2.2-.9 2.2-2 2.2Z"
+						/>
+					</svg>
+					Acceder con Discord
+				</button>
+				<p class="hint">
+					Tu agente MCP apunta a <code>/mcp</code>; este acceso abre la sesión que él reutilizará. Nada se
+					escribe en el servidor: el hub es de solo lectura.
+				</p>
+			</section>
+		</main>
+
+		<footer class="foot">
+			Discord MCP Server · los datos permanecen en esta infraestructura · el contenido de los mensajes indexados
+			se envía al proveedor de embeddings configurado
+		</footer>
+	</body>
+</html>

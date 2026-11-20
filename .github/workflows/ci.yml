@@ -1,0 +1,99 @@
+# Continuous integration: the repository gates that need no secrets, plus the
+# PostgreSQL-backed integration suite against a real pgvector service.
+#
+# The gate commands below are the `package.json` scripts, in the order the
+# README documents them. The formatting step repeats the exact file list of
+# `npm run format` because that script writes while CI must only check; keep
+# the two lists in sync when the script changes.
+name: CI
+
+on:
+    push:
+    pull_request:
+
+permissions:
+    contents: read
+
+jobs:
+    gates:
+        name: Format, lint, architecture, types and unit tests
+        runs-on: ubuntu-latest
+        steps:
+            - name: Check out the repository
+              uses: actions/checkout@v4
+
+            - name: Set up Node.js 22
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "22"
+                  cache: npm
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Formatting
+              run: >-
+                  npx prettier --check
+                  src
+                  tests
+                  migrations
+                  package.json
+                  tsconfig.json
+                  tsconfig.test.json
+                  docker-compose.yml
+                  vitest.config.ts
+                  eslint.config.mjs
+                  prettier.config.mjs
+                  .depcruiser.cjs
+
+            - name: Lint
+              run: npm run lint
+
+            - name: Architecture boundaries
+              run: npm run arch
+
+            - name: Type check
+              run: npm run typecheck
+
+            - name: Unit tests
+              run: npm test
+
+    integration:
+        name: Integration suite (PostgreSQL 16 + pgvector)
+        runs-on: ubuntu-latest
+        # Same image as the `postgres` service in docker-compose.yml; the
+        # credentials below are throwaway CI values. The suite creates and drops
+        # its own databases on this server, so the role has to be able to do
+        # that; they are never an installation's own values.
+        services:
+            postgres:
+                image: pgvector/pgvector:pg16
+                env:
+                    POSTGRES_USER: postgres
+                    POSTGRES_PASSWORD: postgres
+                    POSTGRES_DB: discord_hub
+                ports:
+                    - 5432:5432
+                options: >-
+                    --health-cmd "pg_isready -U postgres"
+                    --health-interval 5s
+                    --health-timeout 3s
+                    --health-retries 12
+                    --health-start-period 30s
+        env:
+            TEST_DATABASE_URL: postgres://postgres:postgres@localhost:5432/discord_hub
+        steps:
+            - name: Check out the repository
+              uses: actions/checkout@v4
+
+            - name: Set up Node.js 22
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "22"
+                  cache: npm
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Integration tests
+              run: npm run test:integration

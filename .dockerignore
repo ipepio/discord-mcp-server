@@ -1,0 +1,23 @@
+# Keep the build context minimal: only package files, tsconfig, src and
+# migrations are needed by the Dockerfile build stage.
+.git
+.env
+.env.*
+*.log
+node_modules
+dist
+coverage
+tests
+docs
+design
+odd
+.pi
+docker-compose.yml
+vitest.config.ts
+eslint.config.mjs
+prettier.config.mjs
+.depcruiser.cjs
+README.md
+CONTEXT.md
+CONTENTS.md
+AGENTS.md
